@@ -48,3 +48,29 @@ print(int(year)-1)
 월 = 48584
 총금액 = 월 * 36
 print(총금액)
+
+ticker = "btc_krw"
+ticker1 = ticker.upper()
+print(ticker1)
+
+ticker = "BTC_KRW"
+ticker = ticker.lower()
+print(ticker)
+
+a = "hello world"
+a.split()
+
+ticker = "btc_krw"
+ticker.split("_")
+
+date = "2020-05-01"
+date.split("-")
+
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(nums[::2])
+
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+print(nums[1::2])
+
+nums = [1, 2, 3, 4, 5]
+print(nums[::-1])
