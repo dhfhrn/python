@@ -94,3 +94,8 @@ elif len(a) >= 3 and b < 5:
     print('medium')
 elif b < 3:
     print('short')
+
+# 튜플
+# 수정, 삭제 ,추가 불가능 -> 변할 수 없는 자료형
+# a = (1)  int
+# t = (1,) tuple
