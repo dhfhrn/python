@@ -46,7 +46,7 @@
 # print(a)
 # break 반복문 중지, while문에서만 가능
 # while True 무한반복
-#continue
+#continue 아래 코드듣을 실행하지 않고 다음을 반복 실행
 
 # for
 # ex)a +1을 10번 반복
@@ -72,3 +72,5 @@ if n == x:
     print('Yes')
 else:
     print('No')
+
+notion
