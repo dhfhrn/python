@@ -79,9 +79,5 @@
 
 #     return new_data
 
-def solution(bandage, health, attacks):
-        maxhealth = health
-        maxtime = attacks[-1][0]
-        attacks_dict = {}
-        for i in attacks:
-                attacks_dict[i[0]] = i[1]
+tkinter
+https://076923.github.io/posts/Python-tkinter-1/
