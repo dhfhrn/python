@@ -81,3 +81,5 @@
 
 tkinter
 https://076923.github.io/posts/Python-tkinter-1/
+
+백준 2759번 숙제
