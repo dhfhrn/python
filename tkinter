@@ -1,0 +1,27 @@
+import tkinter
+
+# 메인 창
+window = tkinter.Tk()
+# 프로그램 타이틀
+window.title("미세먼지 마스크")
+# 윈도우 창 넓이, 높이, 화면 위치 조절   geometry:("가로x세로+x좌표+y좌표")
+window.geometry("800x500+100+100")
+# 윈도우 창 크기 조절   resizable:(상하, 좌우)  윈도우 창의 창 크기 조절 가능 여부를 설정, True로 설정할 경우 윈도우 창의 크기를 조절할 수 있음
+window.resizable(False, False)
+
+label = tkinter.Label(window, text="Hellow Wolrd")
+
+frame1 = tkinter.Frame(window, relief="solid", bd=2)
+frame1.pack(side="left", fill="both", expand=True)
+
+frame2=tkinter.Frame(window, relief="solid", bd=2)
+frame2.pack(side="right", fill="both", expand=True)
+
+button1=tkinter.Button(frame1, text="프레임1")
+button1.pack(side="right")
+
+button2=tkinter.Button(frame2, text="프레임2")
+button2.pack(side="left")
+
+# 프로그램을 종료할때까지 유지
+window.mainloop()
