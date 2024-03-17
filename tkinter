@@ -25,3 +25,5 @@ button2.pack(side="left")
 
 # 프로그램을 종료할때까지 유지
 window.mainloop()
+
+https://076923.github.io/posts/Python-tkinter-1/
