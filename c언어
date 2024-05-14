@@ -1,0 +1,42 @@
+#include <stdio.h>
+main()
+{
+    char book name[201];
+    char writer[21];
+    char publishing company[11]
+    int day;
+    int page;
+    int ISBN;
+    int price;
+    char classification code;
+    double  billing code;
+    printf("도서명을 입력하세요:");
+    scanf("%s", &book name);
+    printf("저자를 입력하세요:");
+    scanf("%s", &writer);
+    printf("출판사를 입력하세요:");
+    scanf("%s", &publishing company);
+    printf("발행일을 입력하세요:")
+    scanf("%d", &day);
+    printf("쪽수를 입력하세요:")
+    scanf("%d", %page);
+    printf("ISBN을 입력하세요:")
+    scanf("%d", &ISBN);
+    printf("정가를 입력하세요:");
+    scanf("%d", &price);
+    printf("분류코드를 입력하세요:");
+    fflush(stdiin);
+    scanf("%c", & classification code);
+    printf("청구코드를 입력하세요:");
+    scanf("%lf", &billing code);
+    printf("도서명: %s|n", book name);
+    printf("저자:%s|n", writer);
+    printf("|n", );
+    printf("|n", );
+    printf("|n", );
+    printf("|n", );
+    printf("|n", );
+    printf("|n", );
+    printf("|n", );
+    
+}
