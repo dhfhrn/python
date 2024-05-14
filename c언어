@@ -9,7 +9,7 @@ main()
     int ISBN;
     int price;
     char classification code;
-    double  billing code;
+    double call numbere;
     printf("도서명을 입력하세요:");
     scanf("%s", &book name);
     printf("저자를 입력하세요:");
@@ -21,16 +21,16 @@ main()
     printf("쪽수를 입력하세요:")
     scanf("%d", %page);
     printf("ISBN을 입력하세요:")
-    scanf("%d", &ISBN);
+    scanf("%lu", &ISBN);
     printf("정가를 입력하세요:");
     scanf("%d", &price);
-    printf("분류코드를 입력하세요:");
     fflush(stdiin);
+    printf("분류코드를 입력하세요:");
     scanf("%c", & classification code);
     printf("청구코드를 입력하세요:");
-    scanf("%lf", &billing code);
+    scanf("%lf", &call number);
     printf("도서명: %s|n", book name);
-    printf("저자:%s|n", writer);
+    printf("저자: %s|n", writer);
     printf("|n", );
     printf("|n", );
     printf("|n", );
@@ -38,5 +38,3 @@ main()
     printf("|n", );
     printf("|n", );
     printf("|n", );
-    
-}
