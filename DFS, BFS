@@ -40,3 +40,40 @@ DFS(s)
 visit = [False] * len(matrix)
 print()
 BFS(s)
+
+def solution(maps):
+    que = deque()
+    # r: 행의 길이, c: 열의 길이
+    r, c = len(maps), len(maps[0])
+    # 목적지
+    target = [r - 1, c - 1]
+    visit = [[False] * c for _ in range(r)]
+    que.append((0, 0, 1))
+    visit[0][0] = True
+
+    while que:
+        x, y, cnt = que.popleft()
+        if [x, y] == target:
+            return cnt
+        for nx, ny in [[x+1, y], [x-1, y], [x, y+1], [x, y-1]]:
+            if 0 <= nx < r and 0 <= ny < c:
+                if not visit[nx][ny] and maps[nx][ny]:
+                    que.append([nx, ny, cnt + 1])
+                    visit[nx][ny] = True
+
+    return -1
+
+    # que에 시작 좌표를 넣고 현재 좌표에서 움직일 수 있는 곳으로 이동한다
+    # 이동할 떄마다 현재의 이동 거리를 같이 계산하며 que에 넣어준다
+    # 만약에 이동한 좌표가 목적지라면 이동횟수를 return한다
+    # 만약 que에 더 이상 값이 없다면, 내가 이동할 수 있는 모든 길을 확인했다는 것을 의미
+    # 그럼에도 목적지에 도착하지 못한 것이라면 -1을 return
+
+maps = [[1,0,1,1,1],
+        [1,0,1,0,1],
+        [1,0,1,1,1],
+        [1,1,1,0,1],
+        [0,0,0,0,1]]
+print(solution(maps))
+
+나이트의 이
