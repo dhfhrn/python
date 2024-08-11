@@ -1,0 +1,29 @@
+from fractions import Fraction
+
+"""decompose함수: 문자열로 이루어진 질문을 받아 Fraction들이 담긴 리스트와 문제에 사용할 문자열들이 담긴 리스트를 튜플로 리턴하라
+
+answer함수: 문자열로 이루어진 질문을 넘겨받고, 이에 해당하는 정답을 문자열로 리턴하라
+"""
+
+
+'''word_fraction함수: 문자열 s와 Fraction을 입력받아 입력받은 문자열의 Fraction만큼의 부분을 리턴
+만약 문자열의 Fraction만큼 분리할 수 없다면 AssertionError를 발생시키고 invalid fraction이라는 메시지를 발생시켜라
+ex) word_fraction("word",Fraction(2,3)) => AssertionError: invalid fraction'''
+
+def word_fraction(s, fraction):
+    words = s.split()   #문자열의 단어 리스트
+
+    total_words = len(s)    #전체 단어 수
+
+    required_words = int(total_words * fraction)  #fraction에 따라 필요한 수 계산
+
+    if required_words > total_words:    # 필요한 단어 수가 전체 단어 수를 초과하면 AssertionError 발생
+        raise AssertionError("invalid fraction")
+
+    return ''.join(words[:required_words])
+
+'''combine함수: 문자열들이 들어있는 리스트와 Fraction들이 들어있는 리스트를 입력받아, 각 문자열별로 Fraction만큼의 부분을 모두 연결시켜 
+하나의 문자열로 만들어 리턴한다.'''
+
+def combine(str, fractions):
+    return ''.join(word_fraction(str, fractions) for )
