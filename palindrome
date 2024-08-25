@@ -26,3 +26,13 @@ def main():
     n = int(data[0])
     values = data[1:]
     for value in values:
+
+
+n = int(input())
+data = input().split(", ")
+for value in data:
+    if n == 1:
+        print(palindrome_value(value))
+    else:
+        print(palindrome_value(value), end=", ")
+    n -= 1
