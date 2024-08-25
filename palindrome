@@ -1,0 +1,28 @@
+# 첫째줄에 입력받을 값의 개수인 n을 입력받고, 두번쨰 줄에 n개의 값들을 구분하여 한줄에 입력받는다.
+# 이 입력받은 값들 중에서, 문자열인 경우 None을, 숫자라면, 10진수 형태와 2진수형태로 보았을 때 모두 팰린드롬이라면 True를
+# 10진수나 2진수형태중에서 팰린드롬이 아닌것이 있다면 False를 입력받은 값의 순서대로 한줄에 출력하라
+
+
+def palindrome_value(value):
+    if value.isdigit():
+        numbers = int(value)
+        decimal_system = str(numbers)
+        binary_system = bin(numbers)[2:]
+        decimal_palindrome = (decimal_system == decimal_system[::-1])
+        binary_palindrome = (binary_system == binary_system[::-1])
+
+        if decimal_palindrome and binary_palindrome:
+            return 'True'
+        else:
+            return 'False'
+    else:
+        return 'None'
+
+def main():
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+
+    n = int(data[0])
+    values = data[1:]
+    for value in values:
