@@ -1,0 +1,252 @@
+import pygame
+import random
+
+# 초기화
+pygame.init()
+
+# 화면 설정
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("간단한 RPG 게임")
+
+# 색상 정의
+WHITE = (255, 255, 255)
+
+# 이미지 로드 (플레이어 및 NPC)
+player_image = pygame.image.load('player.png')
+npc_image = pygame.image.load('npc.png')
+
+# 마을과 위치 정의
+TOWNS = {
+    "시작 마을": (100, 100),
+    "포트 타운": (300, 100),
+    "산 마을": (100, 300),
+    "숲 마을": (300, 300),
+    "광산 마을": (500, 100),
+    "성전환 마을": (600, 200),
+    "사막 마을": (500, 300),
+    "얼음 마을": (700, 400),
+    "해변 마을": (600, 100),
+    "신대륙 마을": (700, 200),
+}
+
+# 던전과 유적 정의
+DUNGEONS = {
+    "어둠의 던전": (100, 400),
+    "고대 유적": (500, 400),
+}
+
+# 포탈 비용
+PORTAL_COST = 10
+
+# 플레이어 클래스
+class Player:
+    def __init__(self):
+        self.rect = pygame.Rect(50, 130, 50, 50)
+        self.health = 100
+        self.max_health = 100
+        self.level = 1
+        self.experience = 0
+        self.coins = 50
+        self.stat_points = 0
+        self.strength = 0
+        self.agility = 0
+        self.intelligence = 0
+        self.luck = 0
+        self.mana = 100
+        self.max_mana = 100
+        self.faith = 0  # 성직자 전직에 사용
+        self.job = "초보자"
+        self.location = "시작 마을"
+        self.font = pygame.font.SysFont("Arial", 24)
+        self.image = player_image
+        self.selected_skill = 0  # 스킬 선택 인덱스
+
+    def draw(self):
+        health_text = self.font.render(f"Health: {self.health}/{self.max_health}", True, (0, 0, 0))
+        level_text = self.font.render(f"Level: {self.level}", True, (0, 0, 0))
+        location_text = self.font.render(f"Location: {self.location}", True, (0, 0, 0))
+        coins_text = self.font.render(f"Coins: {self.coins}", True, (0, 0, 0))
+
+        screen.blit(health_text, (10, 10))
+        screen.blit(level_text, (10, 40))
+        screen.blit(location_text, (10, 70))
+        screen.blit(coins_text, (10, 100))
+        screen.blit(self.image, self.rect.topleft)
+
+    def move(self, dx, dy):
+        self.rect.x += dx
+        self.rect.y += dy
+
+    def travel(self, destination):
+        if self.coins >= PORTAL_COST:
+            self.coins -= PORTAL_COST
+            self.location = destination
+            print(f"{destination}로 포탈을 이용해 이동했습니다!")
+        else:
+            print("코인이 부족하여 포탈을 이용할 수 없습니다.")
+
+    def gain_experience(self, amount):
+        self.experience += amount
+        if self.experience >= 100 * self.level:  # 레벨업 필요 경험치
+            self.level_up()
+
+    def level_up(self):
+        self.level += 1
+        self.stat_points += 4
+        self.max_health += 10
+        self.health = self.max_health
+        print(f"레벨업! 현재 레벨: {self.level}")
+
+# NPC 클래스
+class NPC:
+    def __init__(self, name, job):
+        self.name = name
+        self.job = job
+        self.font = pygame.font.SysFont("Arial", 24)
+
+    def draw(self, position):
+        npc_text = self.font.render(f"{self.name}: {self.job}!", True, (0, 0, 0))
+        screen.blit(npc_text, position)
+
+    def interact(self, player):
+        print(f"{self.name}와 상호작용합니다. 직업: {self.job}")
+        if self.job == "길드 마스터":
+            self.promote(player)
+
+    def promote(self, player):
+        print("전직 퀘스트를 시작합니다!")
+
+# 몬스터 클래스
+class Monster:
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
+        self.health = level * 30
+        self.damage = level * 5
+        self.font = pygame.font.SysFont("Arial", 24)
+
+    def draw(self, position):
+        monster_text = self.font.render(f"Monster: {self.name} (Level: {self.level})", True, (0, 0, 0))
+        screen.blit(monster_text, position)
+
+    def attack(self, player):
+        damage = random.randint(self.damage - 2, self.damage + 2)
+        player.health -= damage
+        print(f"{self.name}이 {damage}의 피해를 주었습니다!")
+
+# 보스 클래스
+class Boss:
+    def __init__(self, name, level):
+        self.name = name
+        self.level = level
+        self.health = level * 50
+        self.damage = level * 10
+        self.font = pygame.font.SysFont("Arial", 24)
+
+    def draw(self):
+        boss_text = self.font.render(f"Boss: {self.name} (Level: {self.level})", True, (255, 0, 0))
+        screen.blit(boss_text, (300, 50))
+
+    def attack(self, player):
+        damage = random.randint(self.damage - 5, self.damage + 5)
+        player.health -= damage
+        print(f"{self.name}이 {damage}의 피해를 주었습니다!")
+
+# 마을의 NPC 추가
+TOWN_NPCS = {
+    "시작 마을": NPC("초보자 NPC", "훈련사"),
+    "포트 타운": NPC("항해사 NPC", "상인"),
+    "산 마을": NPC("광부 NPC", "광부"),
+    "숲 마을": NPC("사냥꾼 NPC", "사냥꾼"),
+    "광산 마을": NPC("광산 관리자 NPC", "관리자"),
+    "성전환 마을": NPC("길드 마스터 NPC", "길드 마스터"),
+    "사막 마을": NPC("상인 NPC", "상인"),
+    "얼음 마을": NPC("얼음 마법사 NPC", "마법사"),
+    "해변 마을": NPC("어부 NPC", "어부"),
+    "신대륙 마을": NPC("전사 NPC", "전사"),
+}
+
+# 신대륙 보스
+final_boss = Boss("신대륙의 파괴자", 100)
+
+# 메인 게임 루프
+def main():
+    player = Player()
+    monsters = [Monster("고블린", 5), Monster("언데드", 7)]  # 몬스터 추가
+    current_dungeon = None
+
+    running = True
+    while running:
+        screen.fill(WHITE)
+        player.draw()
+
+        # 마을 표시 및 NPC 그리기
+        for town, position in TOWNS.items():
+            town_text = player.font.render(town, True, (0, 0, 0))
+            screen.blit(town_text, position)
+            npc = TOWN_NPCS[town]
+            npc.draw((position[0], position[1] + 30))
+
+        # 던전 및 유적 표시
+        for dungeon, position in DUNGEONS.items():
+            dungeon_text = player.font.render(dungeon, True, (0, 0, 0))
+            screen.blit(dungeon_text, position)
+
+        # 최종 보스 표시
+        if player.location == "신대륙 마을":
+            final_boss.draw()
+
+        # 던전 탐험 시 몬스터 표시
+        if current_dungeon:
+            for i, monster in enumerate(monsters):
+                monster.draw((100, 100 + i * 30))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_w:  # 위로 이동
+                    player.move(0, -5)
+                if event.key == pygame.K_s:  # 아래로 이동
+                    player.move(0, 5)
+                if event.key == pygame.K_a:  # 왼쪽으로 이동
+                    player.move(-5, 0)
+                if event.key == pygame.K_d:  # 오른쪽으로 이동
+                    player.move(5, 0)
+
+                if event.key == pygame.K_f:  # NPC와 상호작용
+                    current_npc = TOWN_NPCS[player.location]
+                    current_npc.interact(player)
+
+                if event.key == pygame.K_e:  # 스킬 사용
+                    print("스킬 사용!")
+
+                if event.key == pygame.K_UP:  # 스킬 선택: 위
+                    player.selected_skill = (player.selected_skill - 1) % 3
+                if event.key == pygame.K_DOWN:  # 스킬 선택: 아래
+                    player.selected_skill = (player.selected_skill + 1) % 3
+
+                if event.key == pygame.K_f:  # 보스와 전투 시작
+                    if player.location == "신대륙 마을":
+                        print(f"{final_boss.name}와 전투가 시작되었습니다!")
+                        final_boss.attack(player)
+                        if player.health <= 0:
+                            print("당신은 패배했습니다...")
+                            running = False
+                        else:
+                            player.gain_experience(500)
+
+                # 던전 탐험
+                if player.location in DUNGEONS.keys() and not current_dungeon:
+                    current_dungeon = player.location
+                    print(f"{current_dungeon}에 들어갔습니다!")
+
+        pygame.display.flip()
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
