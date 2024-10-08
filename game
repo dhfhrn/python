@@ -12,10 +12,7 @@ pygame.display.set_caption("간단한 RPG 게임")
 
 # 색상 정의
 WHITE = (255, 255, 255)
-
-# 이미지 로드 (플레이어 및 NPC)
-player_image = pygame.image.load('player.png')
-npc_image = pygame.image.load('npc.png')
+BLACK = (0, 0, 0)
 
 # 마을과 위치 정의
 TOWNS = {
@@ -60,24 +57,32 @@ class Player:
         self.job = "초보자"
         self.location = "시작 마을"
         self.font = pygame.font.SysFont("Arial", 24)
-        self.image = player_image
         self.selected_skill = 0  # 스킬 선택 인덱스
+        self.is_moving = {'up': False, 'down': False, 'left': False, 'right': False}
 
     def draw(self):
-        health_text = self.font.render(f"Health: {self.health}/{self.max_health}", True, (0, 0, 0))
-        level_text = self.font.render(f"Level: {self.level}", True, (0, 0, 0))
-        location_text = self.font.render(f"Location: {self.location}", True, (0, 0, 0))
-        coins_text = self.font.render(f"Coins: {self.coins}", True, (0, 0, 0))
+        health_text = self.font.render(f"Health: {self.health}/{self.max_health}", True, BLACK)
+        level_text = self.font.render(f"Level: {self.level}", True, BLACK)
+        location_text = self.font.render(f"Location: {self.location}", True, BLACK)
+        coins_text = self.font.render(f"Coins: {self.coins}", True, BLACK)
 
         screen.blit(health_text, (10, 10))
         screen.blit(level_text, (10, 40))
         screen.blit(location_text, (10, 70))
         screen.blit(coins_text, (10, 100))
-        screen.blit(self.image, self.rect.topleft)
 
-    def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+        # 플레이어를 사각형으로 그리기
+        pygame.draw.rect(screen, (0, 128, 255), self.rect)
+
+    def move(self):
+        if self.is_moving['up']:
+            self.rect.y -= 5
+        if self.is_moving['down']:
+            self.rect.y += 5
+        if self.is_moving['left']:
+            self.rect.x -= 5
+        if self.is_moving['right']:
+            self.rect.x += 5
 
     def travel(self, destination):
         if self.coins >= PORTAL_COST:
@@ -107,7 +112,7 @@ class NPC:
         self.font = pygame.font.SysFont("Arial", 24)
 
     def draw(self, position):
-        npc_text = self.font.render(f"{self.name}: {self.job}!", True, (0, 0, 0))
+        npc_text = self.font.render(f"{self.name}: {self.job}!", True, BLACK)
         screen.blit(npc_text, position)
 
     def interact(self, player):
@@ -128,7 +133,7 @@ class Monster:
         self.font = pygame.font.SysFont("Arial", 24)
 
     def draw(self, position):
-        monster_text = self.font.render(f"Monster: {self.name} (Level: {self.level})", True, (0, 0, 0))
+        monster_text = self.font.render(f"Monster: {self.name} (Level: {self.level})", True, BLACK)
         screen.blit(monster_text, position)
 
     def attack(self, player):
@@ -176,22 +181,31 @@ def main():
     player = Player()
     monsters = [Monster("고블린", 5), Monster("언데드", 7)]  # 몬스터 추가
     current_dungeon = None
+    show_stats = False
 
     running = True
     while running:
         screen.fill(WHITE)
+
+        # 플레이어 그리기
         player.draw()
+        player.move()
 
         # 마을 표시 및 NPC 그리기
         for town, position in TOWNS.items():
-            town_text = player.font.render(town, True, (0, 0, 0))
+            town_text = player.font.render(town, True, BLACK)
             screen.blit(town_text, position)
             npc = TOWN_NPCS[town]
             npc.draw((position[0], position[1] + 30))
 
+        # 스탯 창 표시
+        if show_stats:
+            stats_text = player.font.render(f"Level: {player.level} | Health: {player.health}/{player.max_health} | Coins: {player.coins}", True, BLACK)
+            screen.blit(stats_text, (10, 130))
+
         # 던전 및 유적 표시
         for dungeon, position in DUNGEONS.items():
-            dungeon_text = player.font.render(dungeon, True, (0, 0, 0))
+            dungeon_text = player.font.render(dungeon, True, BLACK)
             screen.blit(dungeon_text, position)
 
         # 최종 보스 표시
@@ -209,13 +223,13 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_w:  # 위로 이동
-                    player.move(0, -5)
+                    player.is_moving['up'] = True
                 if event.key == pygame.K_s:  # 아래로 이동
-                    player.move(0, 5)
+                    player.is_moving['down'] = True
                 if event.key == pygame.K_a:  # 왼쪽으로 이동
-                    player.move(-5, 0)
+                    player.is_moving['left'] = True
                 if event.key == pygame.K_d:  # 오른쪽으로 이동
-                    player.move(5, 0)
+                    player.is_moving['right'] = True
 
                 if event.key == pygame.K_f:  # NPC와 상호작용
                     current_npc = TOWN_NPCS[player.location]
@@ -224,10 +238,8 @@ def main():
                 if event.key == pygame.K_e:  # 스킬 사용
                     print("스킬 사용!")
 
-                if event.key == pygame.K_UP:  # 스킬 선택: 위
-                    player.selected_skill = (player.selected_skill - 1) % 3
-                if event.key == pygame.K_DOWN:  # 스킬 선택: 아래
-                    player.selected_skill = (player.selected_skill + 1) % 3
+                if event.key == pygame.K_i:  # 스탯 창 표시/숨기기
+                    show_stats = not show_stats
 
                 if event.key == pygame.K_f:  # 보스와 전투 시작
                     if player.location == "신대륙 마을":
@@ -243,6 +255,16 @@ def main():
                 if player.location in DUNGEONS.keys() and not current_dungeon:
                     current_dungeon = player.location
                     print(f"{current_dungeon}에 들어갔습니다!")
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_w:
+                    player.is_moving['up'] = False
+                if event.key == pygame.K_s:
+                    player.is_moving['down'] = False
+                if event.key == pygame.K_a:
+                    player.is_moving['left'] = False
+                if event.key == pygame.K_d:
+                    player.is_moving['right'] = False
 
         pygame.display.flip()
 
