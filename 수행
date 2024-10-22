@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+// 재무 정보를 저장하기 위한 구조체 정의
+typedef struct {
+    float income;   // 총 수입
+    float expense;  // 총 지출
+    float balance;  // 현재 잔액
+} Finance;
+
+// 수입을 추가하는 함수
+void addIncome(Finance *fin, float amount) {
+    fin->income += amount;     // 수입에 추가 금액 더하기
+    fin->balance += amount;    // 잔액에 추가 금액 더하기
+}
+
+// 지출을 추가하는 함수
+void addExpense(Finance *fin, float amount) {
+    fin->expense += amount;    // 지출에 추가 금액 더하기
+    fin->balance -= amount;     // 잔액에서 추가 금액 빼기
+}
+
+// 재무 요약을 출력하는 함수
+void displaySummary(Finance fin) {
+    printf("수입: %.2f\n", fin.income);     // 총 수입 출력
+    printf("지출: %.2f\n", fin.expense);    // 총 지출 출력
+    printf("잔액: %.2f\n", fin.balance);     // 현재 잔액 출력
+}
+
+int main() {
+    Finance myFinance = {0.0, 0.0, 0.0}; // 재무 정보 초기화
+    int choice;                         // 사용자 선택 변수
+    float amount;                       // 입력 금액 변수
+
+    // 무한 루프: 사용자 선택에 따라 반복
+    while (1) {
+        printf("\n개인 재무 관리 도구\n");
+        printf("1. 수입 추가\n");
+        printf("2. 지출 추가\n");
+        printf("3. 요약 보기\n");
+        printf("4. 종료\n");
+        printf("선택하세요: ");
+        scanf("%d", &choice);           // 사용자 선택 입력
+
+        switch (choice) {
+            case 1: // 수입 추가 선택
+                printf("추가할 수입 금액을 입력하세요: ");
+                scanf("%f", &amount);     // 추가할 수입 입력
+                addIncome(&myFinance, amount); // 수입 추가 함수 호출
+                break;
+            case 2: // 지출 추가 선택
+                printf("추가할 지출 금액을 입력하세요: ");
+                scanf("%f", &amount);     // 추가할 지출 입력
+                addExpense(&myFinance, amount); // 지출 추가 함수 호출
+                break;
+            case 3: // 요약 보기 선택
+                displaySummary(myFinance); // 요약 출력 함수 호출
+                break;
+            case 4: // 종료 선택
+                printf("프로그램을 종료합니다.\n");
+                return 0;                 // 프로그램 종료
+            default: // 잘못된 선택 처리
+                printf("잘못된 선택입니다. 다시 시도하세요.\n");
+        }
+    }
+
+    return 0; // 프로그램이 정상 종료됨을 나타냄
+}
