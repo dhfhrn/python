@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 // 재무 정보를 저장하기 위한 구조체 정의
 typedef struct {
     float income;   // 총 수입
     float expense;  // 총 지출
     float balance;  // 현재 잔액
+    float budget;   // 설정된 예산
 } Finance;
 
 // 수입을 추가하는 함수
@@ -17,6 +19,11 @@ void addIncome(Finance *fin, float amount) {
 void addExpense(Finance *fin, float amount) {
     fin->expense += amount;    // 지출에 추가 금액 더하기
     fin->balance -= amount;     // 잔액에서 추가 금액 빼기
+
+    // 예산 초과 체크
+    if (fin->expense > fin->budget) {
+        printf("경고: 지출이 설정된 예산을 초과했습니다!\n");
+    }
 }
 
 // 재무 요약을 출력하는 함수
@@ -24,10 +31,42 @@ void displaySummary(Finance fin) {
     printf("수입: %.2f\n", fin.income);     // 총 수입 출력
     printf("지출: %.2f\n", fin.expense);    // 총 지출 출력
     printf("잔액: %.2f\n", fin.balance);     // 현재 잔액 출력
+    printf("설정된 예산: %.2f\n", fin.budget); // 설정된 예산 출력
+}
+
+// 예산 설정 함수
+void setBudget(Finance *fin, float amount) {
+    fin->budget = amount; // 예산 설정
+    printf("예산이 %.2f로 설정되었습니다.\n", fin->budget);
+}
+
+// 데이터 저장 함수
+void saveData(Finance fin) {
+    FILE *file = fopen("finance_data.txt", "w");
+    if (file) {
+        fprintf(file, "%.2f\n%.2f\n%.2f\n%.2f\n", fin.income, fin.expense, fin.balance, fin.budget);
+        fclose(file);
+        printf("데이터가 저장되었습니다.\n");
+    } else {
+        printf("데이터를 저장할 수 없습니다.\n");
+    }
+}
+
+// 데이터 로드 함수
+void loadData(Finance *fin) {
+    FILE *file = fopen("finance_data.txt", "r");
+    if (file) {
+        fscanf(file, "%f %f %f %f", &fin->income, &fin->expense, &fin->balance, &fin->budget);
+        fclose(file);
+        printf("데이터가 로드되었습니다.\n");
+    } else {
+        printf("저장된 데이터가 없습니다. 새로운 세션을 시작합니다.\n");
+    }
 }
 
 int main() {
-    Finance myFinance = {0.0, 0.0, 0.0}; // 재무 정보 초기화
+    Finance myFinance = {0.0, 0.0, 0.0, 0.0}; // 재무 정보 초기화
+    loadData(&myFinance); // 데이터 로드
     int choice;                         // 사용자 선택 변수
     float amount;                       // 입력 금액 변수
 
@@ -37,7 +76,8 @@ int main() {
         printf("1. 수입 추가\n");
         printf("2. 지출 추가\n");
         printf("3. 요약 보기\n");
-        printf("4. 종료\n");
+        printf("4. 예산 설정\n");
+        printf("5. 종료\n");
         printf("선택하세요: ");
         scanf("%d", &choice);           // 사용자 선택 입력
 
@@ -55,7 +95,13 @@ int main() {
             case 3: // 요약 보기 선택
                 displaySummary(myFinance); // 요약 출력 함수 호출
                 break;
-            case 4: // 종료 선택
+            case 4: // 예산 설정 선택
+                printf("설정할 예산 금액을 입력하세요: ");
+                scanf("%f", &amount);     // 예산 입력
+                setBudget(&myFinance, amount); // 예산 설정 함수 호출
+                break;
+            case 5: // 종료 선택
+                saveData(myFinance); // 데이터 저장
                 printf("프로그램을 종료합니다.\n");
                 return 0;                 // 프로그램 종료
             default: // 잘못된 선택 처리
@@ -65,3 +111,4 @@ int main() {
 
     return 0; // 프로그램이 정상 종료됨을 나타냄
 }
+
