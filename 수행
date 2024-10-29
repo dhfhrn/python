@@ -58,15 +58,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_CREATE: {  // 윈도우가 생성될 때
             // 수입 입력을 위한 텍스트 박스
             CreateWindow("STATIC", "수입 입력:", WS_VISIBLE | WS_CHILD, 10, 10, 80, 20, hwnd, NULL, NULL, NULL);
-            hIncomeEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 10, 100, 20, hwnd, NULL, NULL, NULL);
+            hIncomeEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, 100, 10, 100, 20, hwnd, NULL, NULL, NULL);
             
             // 지출 입력을 위한 텍스트 박스
             CreateWindow("STATIC", "지출 입력:", WS_VISIBLE | WS_CHILD, 10, 40, 80, 20, hwnd, NULL, NULL, NULL);
-            hExpenseEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 40, 100, 20, hwnd, NULL, NULL, NULL);
+            hExpenseEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, 100, 40, 100, 20, hwnd, NULL, NULL, NULL);
             
             // 예산 입력을 위한 텍스트 박스
             CreateWindow("STATIC", "예산 설정:", WS_VISIBLE | WS_CHILD, 10, 70, 80, 20, hwnd, NULL, NULL, NULL);
-            hBudgetEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 70, 100, 20, hwnd, NULL, NULL, NULL);
+            hBudgetEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER | ES_NUMBER, 100, 70, 100, 20, hwnd, NULL, NULL, NULL);
             
             // 버튼 추가
             CreateWindow("BUTTON", "수입 추가", WS_VISIBLE | WS_CHILD, 10, 100, 100, 30, hwnd, (HMENU)1, NULL, NULL);
@@ -80,14 +80,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             switch (LOWORD(wParam)) {
                 case 1: {  // 수입 추가 버튼 클릭
                     char buffer[20];  // 입력 값을 저장할 버퍼
-                    GetWindowText(hIncomeEdit, buffer, 20);  // 텍스트 박스에서 입력값 가져오기
+                    GetWindowText(hIncomeEdit, buffer, sizeof(buffer));  // 텍스트 박스에서 입력값 가져오기
                     float amount = atof(buffer);  // 문자열을 float로 변환
                     addIncome(amount);  // 수입 추가 함수 호출
                     break;
                 }
                 case 2: {  // 지출 추가 버튼 클릭
                     char buffer[20];
-                    GetWindowText(hExpenseEdit, buffer, 20);  // 지출 입력 가져오기
+                    GetWindowText(hExpenseEdit, buffer, sizeof(buffer));  // 지출 입력 가져오기
                     float amount = atof(buffer);  // 문자열을 float로 변환
                     addExpense(amount);  // 지출 추가 함수 호출
                     break;
@@ -97,7 +97,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     break;
                 case 4: {  // 예산 설정 버튼 클릭
                     char buffer[20];
-                    GetWindowText(hBudgetEdit, buffer, 20);  // 예산 입력 가져오기
+                    GetWindowText(hBudgetEdit, buffer, sizeof(buffer));  // 예산 입력 가져오기
                     float amount = atof(buffer);  // 문자열을 float로 변환
                     setBudget(amount);  // 예산 설정 함수 호출
                     break;
@@ -136,3 +136,4 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     return 0;  // 프로그램 종료
 }
+
