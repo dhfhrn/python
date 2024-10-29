@@ -1,3 +1,4 @@
+#include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,106 +10,129 @@ typedef struct {
     float budget;   // 설정된 예산
 } Finance;
 
+// 재무 정보 초기화
+Finance myFinance = {0.0, 0.0, 0.0, 0.0};
+
 // 수입을 추가하는 함수
-void addIncome(Finance *fin, float amount) {
-    fin->income += amount;     // 수입에 추가 금액 더하기
-    fin->balance += amount;    // 잔액에 추가 금액 더하기
+void addIncome(float amount) {
+    myFinance.income += amount;  // 수입에 추가 금액 더하기
+    myFinance.balance += amount;  // 잔액에 추가 금액 더하기
 }
 
 // 지출을 추가하는 함수
-void addExpense(Finance *fin, float amount) {
-    fin->expense += amount;    // 지출에 추가 금액 더하기
-    fin->balance -= amount;     // 잔액에서 추가 금액 빼기
+void addExpense(float amount) {
+    myFinance.expense += amount;  // 지출에 추가 금액 더하기
+    myFinance.balance -= amount;   // 잔액에서 추가 금액 빼기
 
     // 예산 초과 체크
-    if (fin->expense > fin->budget) {
-        printf("경고: 지출이 설정된 예산을 초과했습니다!\n");
+    if (myFinance.expense > myFinance.budget) {
+        MessageBox(NULL, "경고: 지출이 설정된 예산을 초과했습니다!", "경고", MB_OK);
     }
 }
 
 // 재무 요약을 출력하는 함수
-void displaySummary(Finance fin) {
-    printf("수입: %.2f\n", fin.income);     // 총 수입 출력
-    printf("지출: %.2f\n", fin.expense);    // 총 지출 출력
-    printf("잔액: %.2f\n", fin.balance);     // 현재 잔액 출력
-    printf("설정된 예산: %.2f\n", fin.budget); // 설정된 예산 출력
+void displaySummary(HWND hwnd) {
+    char buffer[256];  // 출력할 내용을 저장할 버퍼
+    sprintf(buffer, "수입: %.2f\n지출: %.2f\n잔액: %.2f\n설정된 예산: %.2f",
+            myFinance.income, myFinance.expense, myFinance.balance, myFinance.budget);
+    MessageBox(hwnd, buffer, "재무 요약", MB_OK);  // 메시지 박스에 요약 출력
 }
 
 // 예산 설정 함수
-void setBudget(Finance *fin, float amount) {
-    fin->budget = amount; // 예산 설정
-    printf("예산이 %.2f로 설정되었습니다.\n", fin->budget);
+void setBudget(float amount) {
+    myFinance.budget = amount;  // 예산 설정
+    char buffer[100];
+    sprintf(buffer, "예산이 %.2f로 설정되었습니다.", myFinance.budget);
+    MessageBox(NULL, buffer, "예산 설정", MB_OK);  // 설정된 예산을 알리는 메시지 박스
 }
 
-// 데이터 저장 함수
-void saveData(Finance fin) {
-    FILE *file = fopen("finance_data.txt", "w");
-    if (file) {
-        fprintf(file, "%.2f\n%.2f\n%.2f\n%.2f\n", fin.income, fin.expense, fin.balance, fin.budget);
-        fclose(file);
-        printf("데이터가 저장되었습니다.\n");
-    } else {
-        printf("데이터를 저장할 수 없습니다.\n");
-    }
-}
+// 윈도우 프로시저
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    static HWND hIncomeEdit, hExpenseEdit, hBudgetEdit;  // 텍스트 박스 핸들
 
-// 데이터 로드 함수
-void loadData(Finance *fin) {
-    FILE *file = fopen("finance_data.txt", "r");
-    if (file) {
-        fscanf(file, "%f %f %f %f", &fin->income, &fin->expense, &fin->balance, &fin->budget);
-        fclose(file);
-        printf("데이터가 로드되었습니다.\n");
-    } else {
-        printf("저장된 데이터가 없습니다. 새로운 세션을 시작합니다.\n");
-    }
-}
+    switch (uMsg) {
+        case WM_DESTROY:  // 윈도우가 파괴될 때
+            PostQuitMessage(0);  // 프로그램 종료 메시지 전송
+            return 0;
 
-int main() {
-    Finance myFinance = {0.0, 0.0, 0.0, 0.0}; // 재무 정보 초기화
-    loadData(&myFinance); // 데이터 로드
-    int choice;                         // 사용자 선택 변수
-    float amount;                       // 입력 금액 변수
+        case WM_CREATE: {  // 윈도우가 생성될 때
+            // 수입 입력을 위한 텍스트 박스
+            CreateWindow("STATIC", "수입 입력:", WS_VISIBLE | WS_CHILD, 10, 10, 80, 20, hwnd, NULL, NULL, NULL);
+            hIncomeEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 10, 100, 20, hwnd, NULL, NULL, NULL);
+            
+            // 지출 입력을 위한 텍스트 박스
+            CreateWindow("STATIC", "지출 입력:", WS_VISIBLE | WS_CHILD, 10, 40, 80, 20, hwnd, NULL, NULL, NULL);
+            hExpenseEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 40, 100, 20, hwnd, NULL, NULL, NULL);
+            
+            // 예산 입력을 위한 텍스트 박스
+            CreateWindow("STATIC", "예산 설정:", WS_VISIBLE | WS_CHILD, 10, 70, 80, 20, hwnd, NULL, NULL, NULL);
+            hBudgetEdit = CreateWindow("EDIT", "", WS_VISIBLE | WS_CHILD | WS_BORDER, 100, 70, 100, 20, hwnd, NULL, NULL, NULL);
+            
+            // 버튼 추가
+            CreateWindow("BUTTON", "수입 추가", WS_VISIBLE | WS_CHILD, 10, 100, 100, 30, hwnd, (HMENU)1, NULL, NULL);
+            CreateWindow("BUTTON", "지출 추가", WS_VISIBLE | WS_CHILD, 120, 100, 100, 30, hwnd, (HMENU)2, NULL, NULL);
+            CreateWindow("BUTTON", "요약 보기", WS_VISIBLE | WS_CHILD, 230, 100, 100, 30, hwnd, (HMENU)3, NULL, NULL);
+            CreateWindow("BUTTON", "예산 설정", WS_VISIBLE | WS_CHILD, 340, 100, 100, 30, hwnd, (HMENU)4, NULL, NULL);
+            return 0;
+        }
 
-    // 무한 루프: 사용자 선택에 따라 반복
-    while (1) {
-        printf("\n개인 재무 관리 도구\n");
-        printf("1. 수입 추가\n");
-        printf("2. 지출 추가\n");
-        printf("3. 요약 보기\n");
-        printf("4. 예산 설정\n");
-        printf("5. 종료\n");
-        printf("선택하세요: ");
-        scanf("%d", &choice);           // 사용자 선택 입력
-
-        switch (choice) {
-            case 1: // 수입 추가 선택
-                printf("추가할 수입 금액을 입력하세요: ");
-                scanf("%f", &amount);     // 추가할 수입 입력
-                addIncome(&myFinance, amount); // 수입 추가 함수 호출
-                break;
-            case 2: // 지출 추가 선택
-                printf("추가할 지출 금액을 입력하세요: ");
-                scanf("%f", &amount);     // 추가할 지출 입력
-                addExpense(&myFinance, amount); // 지출 추가 함수 호출
-                break;
-            case 3: // 요약 보기 선택
-                displaySummary(myFinance); // 요약 출력 함수 호출
-                break;
-            case 4: // 예산 설정 선택
-                printf("설정할 예산 금액을 입력하세요: ");
-                scanf("%f", &amount);     // 예산 입력
-                setBudget(&myFinance, amount); // 예산 설정 함수 호출
-                break;
-            case 5: // 종료 선택
-                saveData(myFinance); // 데이터 저장
-                printf("프로그램을 종료합니다.\n");
-                return 0;                 // 프로그램 종료
-            default: // 잘못된 선택 처리
-                printf("잘못된 선택입니다. 다시 시도하세요.\n");
+        case WM_COMMAND: {  // 사용자 입력(버튼 클릭 등)을 처리
+            switch (LOWORD(wParam)) {
+                case 1: {  // 수입 추가 버튼 클릭
+                    char buffer[20];  // 입력 값을 저장할 버퍼
+                    GetWindowText(hIncomeEdit, buffer, 20);  // 텍스트 박스에서 입력값 가져오기
+                    float amount = atof(buffer);  // 문자열을 float로 변환
+                    addIncome(amount);  // 수입 추가 함수 호출
+                    break;
+                }
+                case 2: {  // 지출 추가 버튼 클릭
+                    char buffer[20];
+                    GetWindowText(hExpenseEdit, buffer, 20);  // 지출 입력 가져오기
+                    float amount = atof(buffer);  // 문자열을 float로 변환
+                    addExpense(amount);  // 지출 추가 함수 호출
+                    break;
+                }
+                case 3:  // 요약 보기 버튼 클릭
+                    displaySummary(hwnd);  // 요약 출력 함수 호출
+                    break;
+                case 4: {  // 예산 설정 버튼 클릭
+                    char buffer[20];
+                    GetWindowText(hBudgetEdit, buffer, 20);  // 예산 입력 가져오기
+                    float amount = atof(buffer);  // 문자열을 float로 변환
+                    setBudget(amount);  // 예산 설정 함수 호출
+                    break;
+                }
+            }
+            return 0;
         }
     }
-
-    return 0; // 프로그램이 정상 종료됨을 나타냄
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);  // 기본 처리
 }
 
+// WinMain 함수: 프로그램의 시작점
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    const char CLASS_NAME[] = "FinanceAppClass";  // 윈도우 클래스 이름
+
+    // 윈도우 클래스 등록
+    WNDCLASS wc = {0};  // 구조체 초기화
+    wc.lpfnWndProc = WindowProc;  // 메시지를 처리할 함수 지정
+    wc.hInstance = hInstance;  // 인스턴스 핸들
+    wc.lpszClassName = CLASS_NAME;  // 클래스 이름
+
+    RegisterClass(&wc);  // 클래스 등록
+
+    // 윈도우 생성
+    HWND hwnd = CreateWindowEx(0, CLASS_NAME, "개인 재무 관리 도구", WS_OVERLAPPEDWINDOW,
+                               CW_USEDEFAULT, CW_USEDEFAULT, 450, 200, NULL, NULL, hInstance, NULL);
+
+    ShowWindow(hwnd, nCmdShow);  // 윈도우 표시
+
+    // 메시지 루프
+    MSG msg;  // 메시지 구조체
+    while (GetMessage(&msg, NULL, 0, 0)) {  // 메시지를 받을 때까지 반복
+        TranslateMessage(&msg);  // 메시지를 번역
+        DispatchMessage(&msg);   // 메시지 분배
+    }
+
+    return 0;  // 프로그램 종료
+}
