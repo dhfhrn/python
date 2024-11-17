@@ -1,0 +1,64 @@
+class Element:
+    def __init__(self, data, link=None):
+        self.data = data    # 원소가 가지는 데이터
+        self.link = link    # 바라볼 장소
+
+class Queue:
+    def __init__(self):
+        self.rear = None    # 마지막 들어온 원소를 가르킴
+        self.front = None   # 제일 먼저 들어온 원소
+
+    def enqueue(self, data):
+        elem = Element(data)    # data는 입력값 link는 기본값
+        # Queue에 원소가 없는 경우
+        if self.rear is None:
+            self.rear = self.front = elem
+        #Queue에 원소가 있는 경우
+        else:
+            self.rear.link = elem
+            self.rear = elem
+
+    def dequeue(self):
+        # Queue가 비어있는 경우
+        if self.front is None:
+            return None
+        # Queue에 원소가 하나 있는 경우
+        elif self.rear == self.front:
+            ret_value = self.front.data
+            self.rear = self.front = None
+            return ret_value
+        # Queue에 원소가 여러개인 경우
+        else:
+            ret_value = self.front.data
+            self.front = self.front.link
+            return ret_value
+
+    def reverse(self):
+        prev = None    # 현재 가리키고 있는 원소의 link가 가리킬 곳
+        curr = self.front   # link를 변경 시킬 현재 원소
+        while curr:
+            next = curr.link    # link를 변경 시키고 난 뒤 이동할 다음 원소
+            curr.link = prev    # curr의 link를  prev로 변경
+            prev = curr    # curr의 link를 변경시켰으므로 다음 원소를 가리키며 한칸씩 밀어
+            curr = next
+            # rear와 front가 가리키는 원소룰 서로 바꾼다
+        self.rear, self.front = self.front, self.rear
+
+class Element:
+    # 생성자 함수 (constructor): 클래스로 객체 생성시 가장 먼저 실행되는 함수
+    # 객체 생성시 필요한 정보를 넘겨 주거나, 초기값들 설정 등의 내용을 가진다
+    def __init__(self, data, link = None):
+        self.data = data
+        self.link = link
+class Queue:
+    def __init__(self):
+        self.rear = None    # rear: 가장 최근에 들어온 원소(element)를 가리키는 역할
+        self.front = None   # front: 가장 먼저 들어온 원소(element)를 가리키는 역할
+
+    def enqueue(self, data):
+        elem = Element(data)
+        if self.rear is None:
+            self.rear = self.front = elem
+        else:
+            self.rear.link = elem
+            self.rear =elem
