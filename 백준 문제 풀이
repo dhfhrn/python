@@ -1,0 +1,29 @@
+import sys
+sys.setrecursionlimit(10 ** 6)
+input = sys.stdin.readline
+def DFS(y,x):
+    offset = (0,1),(1,0),(-1,0),(0,-1)
+    for oy, ox in offset:
+        ny = y + oy
+        nx = x + ox
+        if 0 <= ny < H and 0 <= nx < W:
+            if strlist[ny][nx] == '#' and not visit[ny][nx]:
+                visit[ny][nx] = True
+                DFS(ny,nx)
+
+
+T = int(input())
+for _ in range(T):
+    H, W = map(int, input().split())
+    strlist = [list(input().rstrip()) for _ in range(H)]
+    cnt = 0
+    visit = [[False] * W for _ in range(H)]
+    for y in range(H):
+        for x in range(W):
+            if strlist[y][x] == '#' and not visit[y][x]:
+                visit[y][x] = True
+                DFS(y, x)
+                cnt += 1
+    print(cnt)
+
+# 백준 문제 그림 숙제
