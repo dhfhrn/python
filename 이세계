@@ -91,4 +91,7 @@ while Q:
                 board[i][j], board[i + 1][j] = board[i + 1][j], board[i][j]
 
 # 목표 상태에 도달한 최소 횟수 출력
-print(ans)
+if bit == target_bit:
+    print(ans)  # 목표 상태에 도달했을 때의 방문 횟수 출력
+else:
+    print(-1)  # 목표 상태에 도달할 수 없다면 -1 출력
